@@ -1,0 +1,22 @@
+#Install nfs server
+-------------------
+sudo apt update
+sudo apt install nfs-kernel-server -y
+
+#Create share direcory and assign required permission
+----------------------------------------------------
+sudo mkdir -p /srv/nfs/kubedata
+sudo chown nobody:nogroup /srv/nfs/kubedata
+sudo chmod 777 /srv/nfs/kubedata
+#Add cofiguation and start nfs service
+-------------------------------------
+sudo nano /etc/exports
+/srv/nfs/kubedata 192.168.44.0/24(rw,sync,no_subtree_check,no_root_squash)
+sudo exportfs -rav
+sudo systemctl restart nfs-kernel-server
+
+
+#Install nfs clients package to all nodes:
+-----------------------------------------
+sudo apt update
+sudo apt install nfs-common

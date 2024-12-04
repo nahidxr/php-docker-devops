@@ -1,0 +1,30 @@
+#Install Helm:
+------------
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+
+#To install the Prometheus Operator using Helm:
+-----------------------------------------------
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+#Next, install the Prometheus stack (which includes Prometheus, Grafana, and Alertmanager):
+------------
+helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+#Verify the Installation:
+-------------------------
+kubectl get pods -n monitoring
+
+Expose: Prometheus and Grafana Dashboards
+kubectl -n monitoring edit svc prometheus-kube-prometheus-prometheus
+kubectl -n monitoring edit svc prometheus-grafana
+
+#for both service change type ClusterIP to LoadBalancer
+
+#get grafana admin secert:
+kubectl get secret --namespace monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+Browse:
+Grafana: http://192.168.44.202/
+Prometheus: http://192.168.44.201:9090/

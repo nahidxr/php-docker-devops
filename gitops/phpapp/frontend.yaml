@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend-pod
+    appname: bhw
+  name: frontend
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      appname: bhw
+  template:
+    metadata:
+      labels:
+        appname: bhw
+    spec:
+      containers:
+      - image: iqbalkhan319/bhwapp:1.1
+        name: bhwapp

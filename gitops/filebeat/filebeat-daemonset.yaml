@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: filebeat 
+  namespace: kube-system
+  labels:
+    k8s-app: filebeat
+spec:
+  selector:
+    matchLabels:
+      k8s-app: filebeat
+  template:
+    metadata:
+      labels:
+        k8s-app: filebeat
+    spec:
+      containers:
+      - name: filebeat
+        image: docker.elastic.co/beats/filebeat:8.0.0
+        args: [
+          "-e",
+          "-d", "publish",
+          "-E", "output.elasticsearch.hosts=[\"https://192.168.44.150:9200\"]",  # Elasticsearch host
+          "-E", "output.elasticsearch.username=elastic",  # Elasticsearch username
+          "-E", "output.elasticsearch.password=uaa5di1qmFCID=Bb+Fru",  # Elasticsearch password
+          "-E", "output.elasticsearch.ssl.verification_mode=none"  # Disabling SSL verification
+        ]
+        securityContext:
+          runAsUser: 0  # Run as root user to access system logs
+          privileged: true
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/filebeat/filebeat.yml
+          subPath: filebeat.yml
+        - name: logs
+          mountPath: /var/log
+      volumes:
+      - name: config
+        configMap:
+          name: filebeat-config
+      - name: logs
+        hostPath:
+          path: /var/log
+
